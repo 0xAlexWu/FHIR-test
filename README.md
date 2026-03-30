@@ -23,12 +23,15 @@ instructions on generating custom sized datasets.
 - DiagnosticReport
 - DocumentReference
 - Encounter
+- EpisodeOfCare
 - Immunization
 - Medication
 - MedicationRequest
 - Observation
 - Patient
 - Procedure
+- ServiceRequest
+- Specimen
 
 ### What Do the Contents of a Dataset Look Like?
 
@@ -42,6 +45,7 @@ sample-bulk-fhir-datasets-100-patients/
   DiagnosticReport.000.ndjson
   DocumentReference.000.ndjson
   Encounter.000.ndjson
+  EpisodeOfCare.000.ndjson
   Immunization.000.ndjson
   log.ndjson
   MedicationRequest.000.ndjson
@@ -49,6 +53,8 @@ sample-bulk-fhir-datasets-100-patients/
   Observation.001.ndjson
   Patient.000.ndjson
   Procedure.000.ndjson
+  ServiceRequest.000.ndjson
+  Specimen.000.ndjson
 ```
 
 Each file holds a list of FHIR json records (one per line) like:
