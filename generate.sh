@@ -12,6 +12,13 @@ fi
 OUTDIR="$NUM-patients" # note: this is a relative dir
 WORKDIR=$(mktemp -d)
 
+# Ensures that OSX users are using gsed if they have it installed
+SED=sed
+which gsed >/dev/null && SED=gsed
+# Ensures that OSX users are using gsplit if they have it installed
+SPLIT=split
+which gsplit >/dev/null && SPLIT=gsplit
+
 if ! [ -f synthea-with-dependencies.jar ]; then
   echo "Downloading Synthea..."
   wget -q https://github.com/synthetichealth/synthea/releases/download/master-branch-latest/synthea-with-dependencies.jar
@@ -43,6 +50,36 @@ rm -rf $OUTDIR
 mv "$WORKDIR/fhir" $OUTDIR
 rm -r "$WORKDIR"
 
+# Fake an EpisodeOfCare, ServiceRequest, and Specimen for each Encounter
+# (Synthea does not support these resources, but we'd like them)
+$SED -i 's|"resourceType":"Encounter","id":"\([^"]*\)",|\0"episodeOfCare":[{"reference":"EpisodeOfCare/\1"}],|g' "$OUTDIR"/Encounter.ndjson
+FIRST_ENC=y
+cat "$OUTDIR"/Encounter.ndjson | while read line
+do
+  ID=$(echo $line | jq -c '.["id"]')
+  PERIOD=$(echo $line | jq -c '.["period"]')
+  PATIENT=$(echo $line | jq -c '.["subject"]')
+  PURE_ID=$(echo $ID | tr -d '"')
+  ENCOUNTER="{\"reference\": \"Encounter/$PURE_ID\"}"
+  SPECIMEN="{\"reference\": \"Specimen/$PURE_ID\"}"
+  ALL="s|@ID@|$ID|g;s|@PERIOD@|$PERIOD|g;s|@PATIENT@|$PATIENT|g;s|@ENCOUNTER@|$ENCOUNTER|g;s|@SPECIMEN@|$SPECIMEN|g"
+
+  # Make one of each of these that has a different type/category whatever.
+  # This is to make sure that there is *some* variety in downstream consumers and that
+  # if anyone (like Cumulus Library) has minimum-patient-size bucketing, this can be detected by
+  # ensuring these different ones are properly dropped.
+  if [ "$FIRST_ENC" = "y" ]; then
+    VER="2"
+  else
+    VER="1"
+  fi
+  FIRST_ENC=n
+
+  cat templates/EpisodeOfCare$VER.json | $SED "$ALL" | jq -c >> "$OUTDIR"/EpisodeOfCare.ndjson
+  cat templates/ServiceRequest$VER.json | $SED "$ALL" | jq -c >> "$OUTDIR"/ServiceRequest.ndjson
+  cat templates/Specimen$VER.json | $SED "$ALL" | jq -c >> "$OUTDIR"/Specimen.ndjson
+done
+
 ### Manipulation of results ###
 
 # Sort each file
@@ -56,17 +93,11 @@ done
 # But we are interested in a bit more of a mix than that, so fake some emergency department visits.
 HIST_NOTE_TYPE='"system":"http://loinc.org","code":"34117-2","display":"History and physical note"'
 EMER_NOTE_TYPE='"system":"http://loinc.org","code":"34111-5","display":"Emergency department note"'
-# Ensures that OSX users are using gsed if they have it installed 
-SED=sed
-which gsed >/dev/null && SED=gsed 
 # This sed line will modify every 4th line
 $SED -i "0~4s|$HIST_NOTE_TYPE|$EMER_NOTE_TYPE|" $OUTDIR/DocumentReference.ndjson
 
 # Split each file to meet GitHub file limits (100MB per file is hard limit, but they complain at 50MB)
 echo "Splitting files into smaller ones..."
-# Ensures that OSX users are using gsplit if they have it installed 
-SPLIT=split
-which gsplit >/dev/null && SPLIT=gsplit
 for file in $OUTDIR/*; do
   resource=$(basename $file | cut -d. -f1)
   $SPLIT -d --additional-suffix .ndjson --suffix-length 3 --line-bytes 49m $file $OUTDIR/$resource.

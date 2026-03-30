@@ -1,0 +1,13 @@
+{
+    "resourceType": "Specimen",
+    "id": @ID@,
+    "status": "unavailable",
+    "type": {
+        "coding": [{
+            "system": "http://snomed.info/sct",
+            "code": "257261003",
+            "display":"Swab (specimen)"
+        }]
+    },
+    "subject": @PATIENT@
+}
