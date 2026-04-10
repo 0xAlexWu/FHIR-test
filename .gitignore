@@ -1,3 +1,13 @@
 /.idea/
 /[0-9]*-patients/
 /synthea-with-dependencies.jar
+.DS_Store
+__pycache__/
+*.pyc
+/data/
+/outputs/*
+!/outputs/medium/
+!/outputs/medium/candidate_seed_catalog.csv
+!/outputs/medium/observation_profile_summary.csv
+!/outputs/medium/pilot_quota_recommendation.md
+!/outputs/medium/resource_counts_summary.csv
