@@ -1,11 +1,27 @@
+/idea/
+/[0-9]*-patients/
+/synthea-with-dependencies.jar
+.DS_Store
 __pycache__/
 *.pyc
 
-# Local upstream checkouts and unpacked datasets
+# Local upstream checkouts, downloads, and unpacked datasets
+/data/
 /sample-bulk-fhir-datasets/
 /sample-bulk-fhir-datasets-1000-patients/
 /upstream-repo/
-/data/
 
-# Keep the reproducible summaries, but do not commit oversized raw catalogs
+# Ignore generated outputs by default, then allow the curated published summaries
+/outputs/*
+!/outputs/medium/
+!/outputs/large/
 /outputs/**/candidate_seed_catalog.csv
+!/outputs/medium/candidate_seed_catalog.csv
+!/outputs/medium/observation_profile_summary.csv
+!/outputs/medium/pilot_quota_recommendation.md
+!/outputs/medium/resource_counts_summary.csv
+!/outputs/large/candidate_seed_catalog.csv.gz
+!/outputs/large/large_dataset_summary.md
+!/outputs/large/observation_profile_summary.csv
+!/outputs/large/pilot_quota_recommendation.md
+!/outputs/large/resource_counts_summary.csv

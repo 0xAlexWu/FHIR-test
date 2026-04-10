@@ -1,12 +1,22 @@
-# FHIR Source-Pool Profiling
+# FHIR Source Pool Profiling
 
-This workspace profiles the SMART sample bulk FHIR datasets so pilot seed quotas
-and later training-pool design can be grounded in observed prevalence rather than
-fixed ratios.
+This repository profiles SMART on FHIR sample bulk datasets for `Patient`,
+`Observation`, and `Condition` prevalence so pilot seed quotas and later
+training-pool design can follow the observed source pool instead of fixed
+ratios.
 
-## Commands
+## Included Results
 
-Profile the pre-generated Large dataset:
+- Verified Medium profiling outputs remain under `outputs/medium/`.
+- Verified Large profiling outputs now live under `outputs/large/`.
+- The raw Large `candidate_seed_catalog.csv` is generated locally but excluded
+  from version control because it exceeds GitHub's regular file-size limit.
+- A GitHub-friendly `candidate_seed_catalog.csv.gz` is checked in for the Large
+  run instead.
+
+## Main Commands
+
+Profile the pre-generated Large dataset with the new CLI:
 
 ```bash
 python3 scripts/fhir_pool_profiler.py profile-large --output-dir outputs/large
@@ -41,8 +51,7 @@ Equivalent `make` target:
 make generate-2000-and-profile REPO_DIR=/path/to/sample-bulk-fhir-datasets
 ```
 
-If you prefer to run the upstream generator yourself first, this remains
-supported too:
+If you want to run the upstream generator yourself first, that is supported too:
 
 ```bash
 cd /path/to/sample-bulk-fhir-datasets
@@ -53,9 +62,25 @@ python3 scripts/fhir_pool_profiler.py profile-dir \
   --output-dir outputs/custom-2000
 ```
 
+## Legacy Medium Workflow
+
+The repository also keeps the earlier Medium-focused script:
+
+```bash
+python3 scripts/profile_bulk_fhir_pool.py --dataset medium --download
+```
+
+and supports reusing an extracted Medium dataset directory:
+
+```bash
+python3 scripts/profile_bulk_fhir_pool.py \
+  --input-dir data/raw/sample-bulk-fhir-datasets-100-patients \
+  --output-dir outputs/medium
+```
+
 ## Output Files
 
-Each profiling run writes:
+The Large profiler writes:
 
 - `resource_counts_summary.csv`
 - `observation_profile_summary.csv`
@@ -63,10 +88,6 @@ Each profiling run writes:
 - `candidate_seed_catalog.csv.gz`
 - `pilot_quota_recommendation.md`
 - `large_dataset_summary.md`
-
-For GitHub-friendly publication, the compressed `candidate_seed_catalog.csv.gz`
-is intended to be checked in, while the raw `candidate_seed_catalog.csv` can stay
-local because it may exceed GitHub's regular file-size limit.
 
 ## Profiling Rules
 

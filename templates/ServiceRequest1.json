@@ -1,0 +1,24 @@
+{
+    "resourceType": "ServiceRequest",
+    "id": @ID@,
+    "status": "completed",
+    "intent": "order",
+    "category": [{
+        "coding": [{
+            "system": "http://snomed.info/sct",
+            "code": "108252007",
+            "display": "Laboratory procedure"
+        }]
+    }],
+    "code": {
+        "coding": [{
+            "system": "http://loinc.org",
+            "code": "94500-6",
+            "display": "SARS-CoV-2 (COVID-19) RNA"
+        }]
+    },
+    "subject": @PATIENT@,
+    "encounter": @ENCOUNTER@,
+    "occurrencePeriod": @PERIOD@,
+    "specimen": [@SPECIMEN@]
+}

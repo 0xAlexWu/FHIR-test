@@ -1,0 +1,24 @@
+{
+    "resourceType": "ServiceRequest",
+    "id": @ID@,
+    "status": "active",
+    "intent": "plan",
+    "category": [{
+        "coding": [{
+            "system": "http://snomed.info/sct",
+            "code": "363679005",
+            "display": "Imaging"
+        }]
+    }],
+    "code": {
+        "coding": [{
+            "system": "http://loinc.org",
+            "code": "36554-4",
+            "display": "XR Chest Single view"
+        }]
+    },
+    "subject": @PATIENT@,
+    "encounter": @ENCOUNTER@,
+    "occurrencePeriod": @PERIOD@,
+    "specimen": [@SPECIMEN@]
+}
