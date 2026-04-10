@@ -1,0 +1,4 @@
+resource_type,total_count,count_pct_among_target_resources
+Patient,1132,0.16
+Observation,648136,94.03
+Condition,40019,5.81

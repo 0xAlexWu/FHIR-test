@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+
+# Local upstream checkouts and unpacked datasets
+/sample-bulk-fhir-datasets/
+/sample-bulk-fhir-datasets-1000-patients/
+/upstream-repo/
+/data/
+
+# Keep the reproducible summaries, but do not commit oversized raw catalogs
+/outputs/**/candidate_seed_catalog.csv
